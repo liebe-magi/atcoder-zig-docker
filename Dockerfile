@@ -1,17 +1,17 @@
 # Python
-FROM python:3.11.4-slim-bookworm AS python
+FROM python:3.13.7-slim-trixie AS python
 
 # Install online-judge-tools
-RUN python -m pip install online-judge-tools
+RUN python -m pip install online-judge-tools aclogin
 
 # Node.js
-FROM node:18.20.1-bookworm-slim AS node
+FROM node:24.8.0-trixie-slim AS node
 
 # Install atcoder-cli
 RUN npm install -g atcoder-cli
 
 # runner
-FROM ubuntu:22.04 AS runner
+FROM ubuntu:24.04 AS runner
 LABEL maintainer="liebe_magi"
 
 WORKDIR /opt
@@ -45,15 +45,16 @@ RUN apt-get autoremove && \
     rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user
-ARG USER_ID=1000 GROUP_ID=1000
-RUN groupadd -g ${GROUP_ID} user && \
-    useradd -m --no-log-init --system --uid ${USER_ID} user -g user -G sudo -s /usr/bin/fish && \
-    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+RUN apt-get update && apt-get install -y sudo --no-install-recommends && \
+    useradd -m --uid 1001 --shell /usr/bin/fish user && \
+    usermod -aG sudo user && \
+    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Change the user
 USER user
 WORKDIR /home/user/work
 
-COPY --chown=${USER_ID}:${GROUP_ID} ./config.fish /home/user/.config/fish/config.fish
+COPY --chown=user:user ./config.fish /home/user/.config/fish/config.fish
 
 CMD ["/usr/bin/fish"]

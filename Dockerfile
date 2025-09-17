@@ -1,18 +1,18 @@
 # Python
-FROM python:3.11.4-slim-bookworm as python
+FROM python:3.11.4-slim-bookworm AS python
 
 # Install online-judge-tools
 RUN python -m pip install online-judge-tools
 
 # Node.js
-FROM node:18.20.1-bookworm-slim as node
+FROM node:18.20.1-bookworm-slim AS node
 
 # Install atcoder-cli
 RUN npm install -g atcoder-cli
 
 # runner
-FROM ubuntu:22.04 as runner
-LABEL maintainer "liebe_magi"
+FROM ubuntu:22.04 AS runner
+LABEL maintainer="liebe_magi"
 
 WORKDIR /opt
 

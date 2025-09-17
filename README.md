@@ -1,62 +1,67 @@
-[![Docker Pulls](https://img.shields.io/docker/pulls/liebemagi/atcoder-python)](https://hub.docker.com/r/liebemagi/atcoder-python)
+# atcoder-cpp-docker
 
-# atcoder-python-docker
-
-AtCoder用Python Docker環境
+AtCoder用C++ Docker環境
 
 ## Features
 
-- 2023年の[新ジャッジ環境](https://img.atcoder.jp/file/language-update/language-list.html)を構築
+- 2023年の[新ジャッジ環境](https://img.atcoder.jp/file/language-update/language-list.html)に対応したC++環境を構築
 - [atcoder-cli](https://github.com/Tatamo/atcoder-cli)と[oj](https://github.com/online-judge-tools/oj)を用いた解答用ファイル生成、ローカルでのテストケースチェック、提出
-- 独自コマンド(`atc`)による共通化されたコマンドの提供
+- AC Library (v1.5.1) をプリインストール
+- Boost 1.82.0 をプリインストール (C++2b標準対応)
+- GMP、Eigen3 などの数学ライブラリを含む
+- Fish shell と Starship プロンプトによる快適な開発環境
 
 ## Installation
 
-### Install from DockerHub
-
-```
-docker pull liebemagi/atcoder-python:latest
-```
-
 ### Build
 
-```
-git clone https://github.com/liebe-magi/atcoder-python-docker
-cd atcoder-python-docker
-docker build -t atcoder-python .
+```bash
+git clone https://github.com/liebe-magi/atcoder-cpp-docker
+cd atcoder-cpp-docker
+docker build -t atcoder-cpp .
 ```
 
 ## Usage
 
-- VSCodeでのDevContainer環境は[こちら](https://github.com/liebe-magi/atcoder-python-template)
+### Docker コンテナの起動
 
-### Usage for `atc` command
-
-#### Generate `main.py` & get test case
-
-```
-atc new abc001
+```bash
+docker run -it --rm -v $(pwd):/home/user/work atcoder-cpp
 ```
 
-#### Run test
+### AtCoder CLI の使用
 
+#### ログイン
+
+```bash
+acc login
 ```
-atc run abc001-a
 
-# PyPyでテストする場合
-atc run abc001-a --pypy
+#### コンテスト環境のセットアップ
 
-# 環境変数で指定することも可
-PYPY=true atc run abc001-a
+```bash
+acc new abc001
 ```
-#### Submit a code
 
+#### テストケースの取得・実行
+
+```bash
+oj d https://atcoder.jp/contests/abc001/tasks/abc001_a
+g++ -o main main.cpp
+oj t -c "./main"
 ```
-atc run abc001-a --submit
 
-# -sでも可
-atc run abc001-a -s
+#### 提出
 
-# PyPyで提出する場合
-atc run abc001-a -s --pypy
+```bash
+oj s https://atcoder.jp/contests/abc001/tasks/abc001_a main.cpp
 ```
+
+## 含まれるライブラリ・ツール
+
+- **C++ Compiler**: g++-12 (C++2b対応)
+- **AC Library**: v1.5.1
+- **Boost**: 1.82.0 (static link)
+- **数学ライブラリ**: GMP, Eigen3
+- **開発ツール**: atcoder-cli, online-judge-tools
+- **Shell**: Fish shell with Starship prompt

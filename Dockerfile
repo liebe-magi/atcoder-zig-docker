@@ -2,7 +2,7 @@
 FROM python:3.13.7-slim-trixie AS python
 
 # Install online-judge-tools
-RUN python -m pip install online-judge-tools aclogin
+RUN python -m pip install online-judge-tools aclogin setuptools
 
 # Node.js
 FROM node:24.8.0-trixie-slim AS node

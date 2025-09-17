@@ -28,28 +28,18 @@ COPY --from=node /usr/local/bin /usr/local/bin
 
 # Install packages
 RUN apt-get update && \
-    apt-get install -y fish g++-12 wget curl unzip ca-certificates --no-install-recommends && \
+    apt-get install -y fish wget curl unzip ca-certificates git xz-utils --no-install-recommends && \
     curl -sS https://starship.rs/install.sh | sh -s -- --yes
 
-# ac-library
-RUN wget https://github.com/atcoder/ac-library/releases/download/v1.5.1/ac-library.zip -O ac-library.zip && \
-    unzip ac-library.zip -d ac-library && \
-    rm ac-library.zip
+# Install Zig
+ENV AC_ZIG_VERSION=0.15.1
+RUN wget -q https://ziglang.org/download/${AC_ZIG_VERSION}/zig-x86_64-linux-${AC_ZIG_VERSION}.tar.xz && \
+    tar -C /opt -xf zig-x86_64-linux-${AC_ZIG_VERSION}.tar.xz && \
+    ln -s /opt/zig-x86_64-linux-${AC_ZIG_VERSION}/zig /usr/local/bin/zig && \
+    rm zig-x86_64-linux-${AC_ZIG_VERSION}.tar.xz
 
-# boost
-RUN apt-get install -y build-essential --no-install-recommends && \
-    wget https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/boost_1_82_0.tar.gz -O boost_1_82_0.tar.gz && \
-    tar xf boost_1_82_0.tar.gz && \
-    rm boost_1_82_0.tar.gz && \
-    cd boost_1_82_0 && \
-    ./bootstrap.sh --with-toolset=gcc --without-libraries=mpi,graph_parallel && \
-    ./b2 -j3 toolset=gcc variant=release link=static runtime-link=static cxxflags="-std=c++2b" stage && \
-    ./b2 -j3 toolset=gcc variant=release link=static runtime-link=static cxxflags="-std=c++2b" --prefix=/opt/boost/gcc install && \
-    cd .. && \
-    rm -rf boost_1_82_0
-
-RUN apt-get install -y libgmp3-dev libeigen3-dev=3.4.0-2ubuntu2 --no-install-recommends && \
-    apt-get autoremove && \
+# Clean up
+RUN apt-get autoremove && \
     apt-get autoclean && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
